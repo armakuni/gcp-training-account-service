@@ -32,7 +32,7 @@ make lint
 ### To run tests
 
 ```bash
-make tests
+make test
 ```
 
 ### To run the service locally
