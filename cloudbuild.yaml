@@ -1,0 +1,36 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', '${_CONTAINER_HOSTNAME}/$PROJECT_ID/${_SERVICE_NAME}', '.']
+
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["push", "${_CONTAINER_HOSTNAME}/$PROJECT_ID/${_SERVICE_NAME}"]
+
+  - name: '${_CONTAINER_HOSTNAME}/$PROJECT_ID/${_SERVICE_NAME}'
+    args: ['make', 'lint']
+
+  - name: '${_CONTAINER_HOSTNAME}/$PROJECT_ID/${_SERVICE_NAME}'
+    args: ['make', 'tests']
+
+  - name: "gcr.io/cloud-builders/gcloud"
+    args:
+      [
+        "run",
+        "deploy",
+        "${_SERVICE_NAME}",
+        "--image",
+        "${_CONTAINER_HOSTNAME}/$PROJECT_ID/${_SERVICE_NAME}",
+        "--update-env-vars",
+        "CUSTOMER_SERVICE_URL=${_CUSTOMER_SERVICE_URL},ACCOUNT_NAMESPACE=${_ACCOUNT_NAMESPACE}",
+        "--region",
+        "${_REGION}",
+        "--allow-unauthenticated",
+        "--platform",
+        "managed",
+      ]
+
+substitutions:
+  _CONTAINER_HOSTNAME: eu.gcr.io
+  _SERVICE_NAME: gcp-training-account-service
+  _REGION: europe-west1
+  _CUSTOMER_SERVICE_URL: localhost:5000/
+  _ACCOUNT_NAMESPACE: accounts

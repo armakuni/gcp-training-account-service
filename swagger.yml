@@ -1,0 +1,101 @@
+---
+swagger: "2.0"
+
+info:
+  version: 1.0.0
+  title: Account Service API
+  description: An API to manage accounts
+
+host: "localhost:5001"
+schemes:
+  - http
+
+paths:
+  /health:
+    get:
+      summary: Check the health of the service
+      description: Returns a message indicating the health of the service
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Service OK
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: Contains the string "OK"
+
+  /accounts/{accountNumber}:
+    get:
+      summary: Get the account details
+      description: Returns the details details
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: accountNumber
+          required: true
+          description: Account number
+          schema:
+            type: string
+          x-example: '999999'
+      responses:
+        200:
+          description: Account details found
+          schema:
+            $ref: "#/definitions/Account"
+        404:
+          description: Account details not found
+          schema:
+
+
+  /accounts/:
+    post:
+      summary: Create a new account
+      description: Creates the account and returns the details
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: customer
+          description: The customer to create the account for
+          schema:
+            type: string
+            required: 
+              - customerId
+            properties:
+              customerId:
+                type: string
+      responses:
+        201:
+          description: Account was created
+          schema:
+            $ref: "#/definitions/Account"
+        400:
+          description: Bad payload or unknown customer
+          schema:
+            $ref: "#/definitions/Message"
+        415:
+          description: Bad Content-Type
+          schema:
+            $ref: "#/definitions/Message"
+
+definitions:
+  Account:
+    type: object
+    properties:
+      accountNumber:
+        type: string
+        description: Account Number
+      accountStatus:
+        type: string
+        enum: [active, closed]
+        description: The account status
+  Message:
+    type: object
+    properties:
+      message:
+        type: string
+        description: Contains the message
