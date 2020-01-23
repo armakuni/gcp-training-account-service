@@ -10,16 +10,16 @@ venv: requirements.txt ## Setup virtual environment and dependencies
 		. $(VENV_ACTIVATE_PATH); pip install -Ur requirements.txt
 		touch $(VENV_ACTIVATE_PATH)
 
+.PHONY=lint
+lint: venv ## Run Flake8
+		$(PYTHON_PATH) -m flake8 --statistics --count \
+		--exclude=venv,.git,__pycache__,.pytest_cache \
+		--max-complexity 10
+
 .PHONY=test
 test: venv ## Run test
 		. $(VENV_ACTIVATE_PATH); $(PYTHON_PATH) -m pytest
 		. $(VENV_ACTIVATE_PATH); behave
-
-.PHONY=lint
-lint: venv ## Run Flake8
-		$(PYTHON_PATH) -m flake8 --exit-zero --statistics --count \
-		--exclude=venv,.git,__pycache__,.pytest_cache \
-		--max-complexity 10
 
 .PHONY=run
 run: venv ## Run the project
